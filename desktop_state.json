@@ -1,0 +1,14 @@
+{
+  "do_not_disturb": false,
+  "fold_qq_messages": false,
+  "mute_all_notifications": false,
+  "last_updated": "2026-01-11T07:25:42Z",
+  "notification_rules": {
+    "qq": {
+      "enabled": true,
+      "fold_content": false,
+      "mute": false,
+      "urgency": "normal"
+    }
+  }
+}
