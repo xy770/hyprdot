@@ -4,7 +4,7 @@
 
 hl.monitor({
     output = "",
-    mode = "2560x1440@180",
+    mode = "2560x1440@230",
     position = "auto",
     scale = 1.6,
 })
@@ -23,14 +23,15 @@ local mainMod = "SUPER"
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("fcitx5 -d")
-    hl.exec_cmd("waybar & hyprpaper")
+    hl.exec_cmd("ironbar & ~/.config/hypr/scripts/start_hyprpaper.sh")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("mpd & dunst")
-    hl.exec_cmd("~/.config/hypr/binary/hyper_lyric --enable-api=true --enable-temp-file=true")
+    hl.exec_cmd("~/.config/hypr/binary/hyper_lyric --enable-api=false --enable-temp-file=true")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
-    hl.exec_cmd("env SUNSHINE_TRAY=0 sunshine")
-    hl.exec_cmd("~/.config/hypr/binary/cf-ddns/cf-ddns-ipv6")
+    hl.env("ANDROID_HOME", "/opt/android-sdk")
+    hl.env("ANDROID_SDK_ROOT", "/opt/android-sdk")
+    hl.env("ANDROID_USER_HOME", "/home/xy770/.android")
 end)
 
 -------------------------------
@@ -43,6 +44,8 @@ hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("QT_QPA_PLATFORM", "wayland")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("GDK_BACKEND", "wayland")
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "wayland")
+hl.env("ELECTRON_EXTRA_LAUNCH_ARGS", "--ozone-platform=wayland --enable-wayland-ime")
 
 -----------------------
 --- LOOK AND FEEL ---
@@ -115,6 +118,14 @@ hl.device({
     sensitivity = -0.5,
 })
 
+-- 为 Fuzzel 启用背景模糊
+hl.layer_rule({
+    match = { namespace = "launcher" },
+    blur = true,
+    -- 忽略完全透明的像素，让模糊效果更自然
+    ignore_alpha = 0.1 
+})
+
 -- Default curves and animations
 hl.curve("easeOutQuint", { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
 hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1} } })
@@ -148,13 +159,16 @@ hl.bind(mainMod .. " + C", hl.dsp.window.close())
 hl.bind(mainMod .. " + M", hl.dsp.exit())
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("/home/xy770/.config/rofi/launchers/type-6/launcher.sh"))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("fuzzel"))
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("rofi -show drun"))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"), { description = "$d toggle split" })
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
-hl.bind("SUPER + V", hl.dsp.exec_cmd("~/.config/hypr/scripts/cliphist-rofi-img.sh"))
+hl.bind("SUPER + V", hl.dsp.exec_cmd("~/.config/hypr/scripts/cliphist-fuzzel-img.sh"))
 hl.bind("Print", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh"))
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh -m freeze"))
+hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh"))
+hl.bind(mainMod .. "+ SHIFT + T", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh -m freeze"))
 hl.bind(mainMod .. " + B", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("wl-paste -t image/png | swappy -f -"))
 
@@ -218,4 +232,18 @@ hl.window_rule({
         pin = false,
     },
     no_focus = true,
+})
+
+-- 为截图预览定制的 imv 窗口规则 (匹配原生 imv 类)
+hl.window_rule({
+    name = "screenshot-preview",
+    match = { class = "^(imv|imv-wayland)$" }, -- 匹配 imv 的原生类
+    fullscreen = true,
+    border_size = 0,
+    rounding = 0,
+    no_shadow = true,
+    no_anim = true,
+    no_focus = true,
+    opaque = true,
+    no_blur = true,
 })

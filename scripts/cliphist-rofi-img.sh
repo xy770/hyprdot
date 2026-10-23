@@ -26,7 +26,6 @@ selected_idx=$(cliphist list | head -n 100 | while read -r id content; do
     fi
 done | rofi -dmenu \
     -p "Clipboard History" \
-    -theme "$HOME/.config/rofi/launchers/type-6/clip.rasi" \
     -show-icons \
     -format i)
 
