@@ -23,12 +23,13 @@ local mainMod = "SUPER"
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("fcitx5 -d")
-    hl.exec_cmd("ironbar & ~/.config/hypr/scripts/start_hyprpaper.sh")
+    hl.exec_cmd("ironbar & hyprpaper")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("mpd & dunst")
     hl.exec_cmd("~/.config/hypr/binary/hyper_lyric --enable-api=false --enable-temp-file=true")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
+    hl.exec_cmd("hyprctl eval 'hl.device({ name = \"yjx-chip-usb-receiver-mouse\", sensitivity = -0.85, accel_profile = \"flat\" })'")
     hl.env("ANDROID_HOME", "/opt/android-sdk")
     hl.env("ANDROID_SDK_ROOT", "/opt/android-sdk")
     hl.env("ANDROID_USER_HOME", "/home/xy770/.android")
@@ -102,7 +103,7 @@ hl.config({
         kb_options = "",
         kb_rules = "",
         follow_mouse = 1,
-        sensitivity = 0,
+        sensitivity = -0.85,
         touchpad = {
             natural_scroll = false,
         },
@@ -110,12 +111,6 @@ hl.config({
     xwayland = {
         force_zero_scaling = true,
     },
-})
-
--- 修复1: per-device 配置必须用独立的 hl.device()，不能放进 hl.config
-hl.device({
-    name = "epic-mouse-v1",
-    sensitivity = -0.5,
 })
 
 -- 为 Fuzzel 启用背景模糊
